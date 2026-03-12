@@ -132,14 +132,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\D3D12\DescriptorAllocator.cpp" />
     <ClCompile Include="source\D3D12\DeviceContext.cpp" />
+    <ClCompile Include="source\D3D12\SwapChain.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\D3D12\DescriptorAllocator.h" />
     <ClInclude Include="source\D3D12\DeviceContext.h" />
+    <ClInclude Include="source\D3D12\SwapChain.h" />
     <ClInclude Include="source\pch.h" />
     <ClInclude Include="source\Util\Helper.h" />
   </ItemGroup>

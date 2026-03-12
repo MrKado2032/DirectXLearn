@@ -2,6 +2,7 @@
 #include "Util/Helper.h"
 
 #include "D3D12/DeviceContext.h"
+#include "D3D12/SwapChain.h"
 
 int main() {
 
@@ -25,8 +26,10 @@ int main() {
 	// --- ここにDirectX12オブジェクトを作っていく ---
 
 	DeviceContext deviceContext;
+	SwapChain swapChain;
 	try {
 		deviceContext.create();
+		swapChain.create(deviceContext, 1280, 720, glfwGetWin32Window(window));
 	}
 	catch (std::exception& e) {
 		util::Print(e.what());
@@ -40,6 +43,7 @@ int main() {
 	}
 
 	// 終了処理
+	swapChain.destroy();
 	deviceContext.destroy();
 
 	glfwDestroyWindow(window);

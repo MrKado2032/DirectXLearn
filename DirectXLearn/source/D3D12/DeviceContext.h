@@ -4,6 +4,8 @@ using Microsoft::WRL::ComPtr;
 
 class DeviceContext {
 public:
+	static constexpr uint32_t MaxFrameCount = 2;
+
 	DeviceContext();
 	~DeviceContext();
 
@@ -12,6 +14,10 @@ public:
 
 	void create();
 	void destroy();
+
+	ID3D12Device* getDevice() const { return mDevice.Get(); }
+	ID3D12CommandQueue* getGraphicsQueue() const { return mGraphicsQueue.Get(); }
+	IDXGIFactory7* getFactory() const { return mFactory.Get(); }
 
 private:
 	void setupDebugLayer(UINT& dxgiFlags);

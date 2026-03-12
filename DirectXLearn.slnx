@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="DirectXLearn/DirectXLearn.vcxproj" />
+  <Project Path="DirectXLearn/DirectXLearn.vcxproj" Id="67da0a6e-6c32-416b-aabb-6487b16647bc" />
 </Solution>

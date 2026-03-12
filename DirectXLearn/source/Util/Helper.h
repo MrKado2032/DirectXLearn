@@ -20,4 +20,10 @@ namespace util {
 			throw std::exception();
 		}
 	}
+
+	template<typename object>
+	inline bool nullCheck(object obj) {
+		if (!obj) return true;
+		return false;
+	}
 }
