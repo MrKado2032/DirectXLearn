@@ -25,7 +25,12 @@ int main() {
 	// --- ここにDirectX12オブジェクトを作っていく ---
 
 	DeviceContext deviceContext;
-	deviceContext.create();
+	try {
+		deviceContext.create();
+	}
+	catch (std::exception& e) {
+		util::Print(e.what());
+	}
 
 	// ---
 
