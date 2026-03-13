@@ -107,7 +107,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source;C:\Users\abyss\Desktop\ライブラリ\glfw\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source\pch;C:\Users\abyss\Desktop\ライブラリ\glfw\include;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,19 +132,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Core\Application.cpp" />
     <ClCompile Include="source\D3D12\DescriptorAllocator.cpp" />
     <ClCompile Include="source\D3D12\DeviceContext.cpp" />
     <ClCompile Include="source\D3D12\SwapChain.cpp" />
     <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\pch.cpp">
+    <ClCompile Include="source\pch\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\Core\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Core\Application.h" />
     <ClInclude Include="source\D3D12\DescriptorAllocator.h" />
     <ClInclude Include="source\D3D12\DeviceContext.h" />
     <ClInclude Include="source\D3D12\SwapChain.h" />
-    <ClInclude Include="source\pch.h" />
+    <ClInclude Include="source\pch\pch.h" />
+    <ClInclude Include="source\Core\Renderer.h" />
     <ClInclude Include="source\Util\Helper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

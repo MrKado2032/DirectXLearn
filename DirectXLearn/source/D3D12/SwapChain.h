@@ -16,6 +16,18 @@ public:
 	void create(const DeviceContext& context, uint32_t w, uint32_t h, HWND hWnd);
 	void destroy();
 
+	void present();
+
+	ID3D12Resource* getBackBuffer() const {
+		auto imageIdx = mSwapchain->GetCurrentBackBufferIndex();
+		return mFrameResources[imageIdx].backBuffer.Get();
+	}
+
+	DescriptorHandle getHandle() const {
+		auto imageIdx = mSwapchain->GetCurrentBackBufferIndex();
+		return mFrameResources[imageIdx].handle;
+	}
+
 private:
 	struct FrameResource {
 		ComPtr<ID3D12Resource> backBuffer;

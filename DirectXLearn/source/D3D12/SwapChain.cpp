@@ -62,3 +62,8 @@ void SwapChain::destroy()
 		mSwapchain.Reset();
 	}
 }
+
+void SwapChain::present()
+{
+	mSwapchain->Present(1, 0);
+}

@@ -24,14 +24,54 @@ void DeviceContext::create()
 
 	// グラフィックスキューの作成
 	createGraphicsQueue();
+
+	// 同期オブジェクトの作成
+	createSyncObject();
 }
 
 void DeviceContext::destroy()
 {
 	// Comptrは自動的に破棄してくれるみたいだが、念のため手動で
+	CloseHandle(mFenceEvent);
+	mFence.Reset();
 	mGraphicsQueue.Reset();
 	mDevice.Reset();
 	mFactory.Reset();
+}
+
+UINT64 DeviceContext::flushGPU()
+{
+	UINT64 waitValue = signalFence();
+	waitForFence(waitValue);
+
+	return waitValue;
+}
+
+/// <summary>
+/// フェンスから同期をとる
+/// </summary>
+/// <param name="pFence"></param>
+/// <param name="fenceValue"></param>
+void DeviceContext::waitForFence(UINT64 fenceValue)
+{
+	if (mFence->GetCompletedValue() < fenceValue) {
+		mFence->SetEventOnCompletion(fenceValue, mFenceEvent);
+		WaitForSingleObject(mFenceEvent, INFINITE);
+	}
+}
+
+/// <summary>
+/// フェンスに信号を送る
+/// </summary>
+/// <param name="pFence"></param>
+/// <param name="fenceValue"></param>
+UINT64 DeviceContext::signalFence()
+{
+	UINT64 signalToValue = mNextFenceValue;
+	mGraphicsQueue->Signal(mFence.Get(), signalToValue);
+	mNextFenceValue++;
+
+	return signalToValue;
 }
 
 /// <summary>
@@ -89,4 +129,13 @@ void DeviceContext::createGraphicsQueue()
 	queueDesc.NodeMask = 0;										// マルチGPUを有効にしたいときに使うみたい。私は1個しか使わないから「0」でOKみたい。
 
 	util::ThrowIfFailed(mDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(mGraphicsQueue.GetAddressOf())));
+}
+
+/// <summary>
+/// 同期オブジェクトの作成
+/// </summary>
+void DeviceContext::createSyncObject()
+{
+	util::ThrowIfFailed(mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(mFence.GetAddressOf())));
+	mFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
