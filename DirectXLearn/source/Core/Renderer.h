@@ -1,5 +1,6 @@
 #pragma once
 #include "D3D12/DeviceContext.h"
+#include "D3D12/CommandContext.h"
 #include "D3D12/SwapChain.h"
 
 class Renderer {
@@ -23,10 +24,10 @@ private:
 	};
 
 	DeviceContext mContext{};
+	CommandContext mCmdContext{};
 	SwapChain mSwapChain{};
 
 	FrameData mFrameDatas[DeviceContext::MaxFrameCount]{};
-	ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
 	uint32_t mCurrentFrameIndex = 0;
 

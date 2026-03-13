@@ -16,30 +16,30 @@ void Renderer::create(uint32_t width, uint32_t height, HWND hWnd)
 	try {
 		mContext.create();
 		mSwapChain.create(mContext, width, height, hWnd);
+	
+		// コマンドアロケーターの作成
+		auto device = mContext.getDevice();
+		for (auto& frame : mFrameDatas) {
+			util::ThrowIfFailed(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(frame.commandAllocator.GetAddressOf())));
+		}
+
+		mCmdContext.create(mContext.getDevice(), mFrameDatas[0].commandAllocator.Get(), D3D12_COMMAND_LIST_TYPE_DIRECT);
 	}
 	catch (std::exception& e) {
 		util::Print(e.what());
 	}
-
-	// コマンドアロケーターの作成
-	auto device = mContext.getDevice();
-	for (auto& frame : mFrameDatas) {
-		util::ThrowIfFailed(device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(frame.commandAllocator.GetAddressOf())));
-	}
-
-	// コマンドリストの作成 (のちのリファクタリングで変わる可能性あり) 
-	util::ThrowIfFailed(device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mFrameDatas[0].commandAllocator.Get(), nullptr, IID_PPV_ARGS(mCommandList.GetAddressOf())));
-	util::ThrowIfFailed(mCommandList->Close());
 }
 
 void Renderer::destroy()
 {
-	UINT64 completedValue = mContext.flushGPU();	// 今ある実行中の処理をすべて待つ
+	// 今ある実行中の処理をすべて待つ
+	UINT64 completedValue = mContext.flushGPU();
 	for (auto& frame : mFrameDatas) {
 		frame.fenceValue = completedValue;
 	}
 
 	mSwapChain.destroy();
+	mCmdContext.destroy();
 	mContext.destroy();
 }
 
@@ -49,43 +49,39 @@ void Renderer::begin()
 	mContext.waitForFence(frameData.fenceValue);		// 同期をとる
 
 	util::ThrowIfFailed(frameData.commandAllocator->Reset());
-	util::ThrowIfFailed(mCommandList->Reset(frameData.commandAllocator.Get(), nullptr));
+	
+	// コマンド書き込み開始
+	mCmdContext.begin(frameData.commandAllocator.Get());
 
-	D3D12_RESOURCE_BARRIER barrier{};
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrier.Transition.pResource = mSwapChain.getBackBuffer();
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	mCommandList->ResourceBarrier(1, &barrier);										// バリアで画面に書き込める状態にする
+	// バリアで画面に書き込める状態にする
+	mCmdContext.transitionBarrier(mSwapChain.getBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	auto const& handle = mSwapChain.getHandle();
-	mCommandList->OMSetRenderTargets(1, &handle.cpuHandle, TRUE, nullptr);			// レンダーターゲットビューのセット
-
+	// 画面をクリア
+	auto handle = mSwapChain.getHandle();
 	FLOAT clearColors[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	mCommandList->ClearRenderTargetView(handle.cpuHandle, clearColors, 0, nullptr);	// 画面をクリア
+	mCmdContext.clearRenderTarget(handle.cpuHandle, clearColors);
 }
 
 void Renderer::end()
 {
 	auto& frameData = mFrameDatas[mCurrentFrameIndex];
 
-	D3D12_RESOURCE_BARRIER barrier{};
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrier.Transition.pResource = mSwapChain.getBackBuffer();
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	mCommandList->ResourceBarrier(1, &barrier);	// バリアを元の状態に戻す
+	// バリアを元の状態に戻す
+	mCmdContext.transitionBarrier(mSwapChain.getBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
-	mCommandList->Close();						// これ以上コマンドを書き込めないように閉じる
+	// コマンドの書き込みを終了
+	mCmdContext.end();
 
-	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
-	mContext.getGraphicsQueue()->ExecuteCommandLists(1, cmdLists);	// ため込んだコマンドを実行していく
+	// ため込んだコマンドを実行していく
+	ID3D12CommandList* cmdLists[] = { mCmdContext.getCommandLists() };
+	mContext.getGraphicsQueue()->ExecuteCommandLists(1, cmdLists);
 
-	frameData.fenceValue = mContext.signalFence();					// 現在の実行状況を値で取得 (同期をとるために必要)
+	// 現在の実行状況を値で取得 (同期をとるために必要)
+	frameData.fenceValue = mContext.signalFence();
 
-	mSwapChain.present();											// 画面をフリップ
+	// 画面をフリップ
+	mSwapChain.present();
 
-	mCurrentFrameIndex = (mCurrentFrameIndex + 1) % DeviceContext::MaxFrameCount;	// フレームを次に移動
+	// フレームを次に移動
+	mCurrentFrameIndex = (mCurrentFrameIndex + 1) % DeviceContext::MaxFrameCount;
 }
