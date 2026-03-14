@@ -3,6 +3,7 @@
 #include "D3D12/CommandContext.h"
 #include "D3D12/SwapChain.h"
 #include "D3D12/Model.h"
+#include "D3D12/ShaderLoader.h"
 
 struct Model;
 class Renderer {
@@ -37,6 +38,7 @@ private:
 
 	uint32_t mCurrentFrameIndex = 0;
 
+	ShaderLoader shaderLoader;
 	Model mModel;
 
 };

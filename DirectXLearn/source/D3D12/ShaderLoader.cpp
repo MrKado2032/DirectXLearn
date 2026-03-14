@@ -4,9 +4,6 @@
 #include <filesystem>
 #include "Util/Helper.h"
 
-ComPtr<IDxcUtils> ShaderLoader::mDxcUtils;
-ComPtr<IDxcCompiler3> ShaderLoader::mDxcCompiler;
-
 ShaderData ShaderLoader::loadShaderFromFile(const std::wstring& filePath)
 {
 	ShaderData data{};

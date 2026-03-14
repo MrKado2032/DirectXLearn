@@ -2,7 +2,6 @@
 #include "Renderer.h"
 
 #include "Util/Helper.h"
-#include "D3D12/ShaderLoader.h"
 
 #include "D3D12/Mesh.h"
 
@@ -47,7 +46,7 @@ void Renderer::create(uint32_t width, uint32_t height, HWND hWnd)
 		util::ThrowIfFailed(device->CreateRootSignature(0, rootSigBinary->GetBufferPointer(), rootSigBinary->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf())));
 
 		// シェーダーのコンパイル
-		auto shaderData = ShaderLoader::loadShaderFromFile(L"source/Shaders/BasicShader.hlsl");
+		auto shaderData = shaderLoader.loadShaderFromFile(L"source/Shaders/BasicShader.hlsl");
 
 		// パイプラインステートの作成 (後にリファクタリング)
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc{};

@@ -16,11 +16,11 @@ public:
 	ShaderLoader(const ShaderLoader&) = delete;
 	ShaderLoader operator=(const ShaderLoader&) = delete;
 	
-	static ShaderData loadShaderFromFile(const std::wstring& filePath);
+	ShaderData loadShaderFromFile(const std::wstring& filePath);
 
 private:
-	static std::vector<char> compileWithDxc(const std::wstring& filePath, const std::string& entryPoint, const std::string& target);
+	std::vector<char> compileWithDxc(const std::wstring& filePath, const std::string& entryPoint, const std::string& target);
 
-	static ComPtr<IDxcUtils> mDxcUtils;
-	static ComPtr<IDxcCompiler3> mDxcCompiler;
+	ComPtr<IDxcUtils> mDxcUtils;
+	ComPtr<IDxcCompiler3> mDxcCompiler;
 };
