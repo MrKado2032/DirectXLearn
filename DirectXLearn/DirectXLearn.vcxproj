@@ -112,7 +112,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;dxguid.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d12.lib;dxgi.lib;d3dcompiler.lib;dxcompiler.lib;dxguid.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\abyss\Desktop\ライブラリ\glfw\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -136,6 +136,7 @@
     <ClCompile Include="source\D3D12\CommandContext.cpp" />
     <ClCompile Include="source\D3D12\DescriptorAllocator.cpp" />
     <ClCompile Include="source\D3D12\DeviceContext.cpp" />
+    <ClCompile Include="source\D3D12\ShaderLoader.cpp" />
     <ClCompile Include="source\D3D12\SwapChain.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\pch\pch.cpp">
@@ -148,10 +149,16 @@
     <ClInclude Include="source\D3D12\CommandContext.h" />
     <ClInclude Include="source\D3D12\DescriptorAllocator.h" />
     <ClInclude Include="source\D3D12\DeviceContext.h" />
+    <ClInclude Include="source\D3D12\ShaderLoader.h" />
     <ClInclude Include="source\D3D12\SwapChain.h" />
     <ClInclude Include="source\pch\pch.h" />
     <ClInclude Include="source\Core\Renderer.h" />
     <ClInclude Include="source\Util\Helper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\Shaders\BasicShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

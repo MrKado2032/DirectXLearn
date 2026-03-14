@@ -29,6 +29,15 @@ private:
 
 	FrameData mFrameDatas[DeviceContext::MaxFrameCount]{};
 
+	ComPtr<ID3D12RootSignature> mRootSignature;
+	ComPtr<ID3D12PipelineState> mPipelineState;
+
+	ComPtr<ID3D12Resource> vertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW vbView{};
+
+	ComPtr<ID3D12Resource> indexBuffer;
+	D3D12_INDEX_BUFFER_VIEW ibView{};
+
 	uint32_t mCurrentFrameIndex = 0;
 
 };

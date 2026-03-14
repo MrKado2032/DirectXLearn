@@ -35,6 +35,11 @@ void CommandContext::end()
 	util::ThrowIfFailed(mCommandList->Close());	// これ以上コマンドを書き込めないように閉じる
 }
 
+void CommandContext::setRootSignature(ID3D12RootSignature* pRootsignature)
+{
+	mCommandList->SetGraphicsRootSignature(pRootsignature);
+}
+
 /// <summary>
 /// バリアの遷移
 /// </summary>
@@ -52,6 +57,16 @@ void CommandContext::transitionBarrier(ID3D12Resource* pResource, D3D12_RESOURCE
 	mCommandList->ResourceBarrier(1, &barrier);
 }
 
+void CommandContext::setViewPort(D3D12_VIEWPORT& viewport)
+{
+	mCommandList->RSSetViewports(1, &viewport);
+}
+
+void CommandContext::setScissorRect(D3D12_RECT& scissorRect)
+{
+	mCommandList->RSSetScissorRects(1, &scissorRect);
+}
+
 /// <summary>
 /// レンダーターゲットビューのクリア
 /// </summary>
@@ -64,4 +79,19 @@ void CommandContext::clearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE& handle, FLOA
 
 	// 画面をクリア
 	mCommandList->ClearRenderTargetView(handle, color, 0, nullptr);
+}
+
+void CommandContext::drawInstanced(UINT vertexCount, UINT instanceCount, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView)
+{
+	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mCommandList->DrawInstanced(vertexCount, instanceCount, 0, 0);
+}
+
+void CommandContext::drawIndxed(UINT indexCount, UINT instanceCount, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView, D3D12_INDEX_BUFFER_VIEW& indexBufferView)
+{
+	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	mCommandList->IASetIndexBuffer(&indexBufferView);
+	mCommandList->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
 }
