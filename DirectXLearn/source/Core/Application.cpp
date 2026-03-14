@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Application.h"
 
+#include "D3D12/GraphicsCore.h"
 #include "Util/Helper.h"
 
 Application::Application()
@@ -22,6 +23,9 @@ Application::Application()
 		throw std::runtime_error("Failed to create window");
 	}
 
+	// GraphicsCoreの初期化
+	GraphicsCore::initialize();
+
 	// レンダラーの作成
 	mRenderer.create(1280, 720, glfwGetWin32Window(mWindow));
 }
@@ -29,6 +33,7 @@ Application::Application()
 Application::~Application()
 {
 	mRenderer.destroy();
+	GraphicsCore::destroy();
 
 	glfwDestroyWindow(mWindow);
 	glfwTerminate();

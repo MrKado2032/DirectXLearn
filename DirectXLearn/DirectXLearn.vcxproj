@@ -133,9 +133,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\Core\Application.cpp" />
+    <ClCompile Include="source\D3D12\Buffer.cpp" />
     <ClCompile Include="source\D3D12\CommandContext.cpp" />
     <ClCompile Include="source\D3D12\DescriptorAllocator.cpp" />
     <ClCompile Include="source\D3D12\DeviceContext.cpp" />
+    <ClCompile Include="source\D3D12\GraphicsCore.cpp" />
+    <ClCompile Include="source\D3D12\Mesh.cpp" />
+    <ClCompile Include="source\D3D12\Model.cpp" />
     <ClCompile Include="source\D3D12\ShaderLoader.cpp" />
     <ClCompile Include="source\D3D12\SwapChain.cpp" />
     <ClCompile Include="source\main.cpp" />
@@ -146,9 +150,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Core\Application.h" />
+    <ClInclude Include="source\D3D12\Buffer.h" />
     <ClInclude Include="source\D3D12\CommandContext.h" />
     <ClInclude Include="source\D3D12\DescriptorAllocator.h" />
     <ClInclude Include="source\D3D12\DeviceContext.h" />
+    <ClInclude Include="source\D3D12\GraphicsCore.h" />
+    <ClInclude Include="source\D3D12\Mesh.h" />
+    <ClInclude Include="source\D3D12\Model.h" />
     <ClInclude Include="source\D3D12\ShaderLoader.h" />
     <ClInclude Include="source\D3D12\SwapChain.h" />
     <ClInclude Include="source\pch\pch.h" />

@@ -2,7 +2,9 @@
 #include "D3D12/DeviceContext.h"
 #include "D3D12/CommandContext.h"
 #include "D3D12/SwapChain.h"
+#include "D3D12/Model.h"
 
+struct Model;
 class Renderer {
 public:
 	Renderer();
@@ -17,13 +19,14 @@ public:
 	void begin();
 	void end();
 
+	void drawModel(Model& model);
+
 private:
 	struct FrameData {
 		ComPtr<ID3D12CommandAllocator> commandAllocator;
 		UINT64 fenceValue = 0;
 	};
 
-	DeviceContext mContext{};
 	CommandContext mCmdContext{};
 	SwapChain mSwapChain{};
 
@@ -32,12 +35,8 @@ private:
 	ComPtr<ID3D12RootSignature> mRootSignature;
 	ComPtr<ID3D12PipelineState> mPipelineState;
 
-	ComPtr<ID3D12Resource> vertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW vbView{};
-
-	ComPtr<ID3D12Resource> indexBuffer;
-	D3D12_INDEX_BUFFER_VIEW ibView{};
-
 	uint32_t mCurrentFrameIndex = 0;
+
+	Model mModel;
 
 };
