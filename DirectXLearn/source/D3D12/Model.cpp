@@ -4,9 +4,10 @@
 #include "GraphicsCore.h"
 #include "Buffer.h"
 
-Model ModelGenerator::generateModel(const Mesh& mesh)
+Model ModelGenerator::generateModel(const Mesh& mesh, const Material& material)
 {
 	Model model{};
+	model.material = material;
 
 	auto const& context = GraphicsCore::getDeviceContext();
 

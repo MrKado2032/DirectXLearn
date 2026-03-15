@@ -4,6 +4,7 @@
 #include "Util/Helper.h"
 
 #include "D3D12/Mesh.h"
+#include "D3D12/Material.h"
 
 #include "D3D12/GraphicsCore.h"
 
@@ -37,12 +38,29 @@ void Renderer::create(uint32_t width, uint32_t height, GLFWwindow* window)
 
 
 		// ルートシグネチャの作成 (後にリファクタリング) 
+		D3D12_DESCRIPTOR_RANGE1 descriptorRanges[1]{};
+		descriptorRanges[0].BaseShaderRegister = 0;
+		descriptorRanges[0].Flags = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC;
+		descriptorRanges[0].NumDescriptors = 1;
+		descriptorRanges[0].OffsetInDescriptorsFromTableStart = 0;
+		descriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		descriptorRanges[0].RegisterSpace = 0;
+
+		D3D12_ROOT_PARAMETER1 rootParams[1]{};
+		rootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParams[0].DescriptorTable.NumDescriptorRanges = _countof(descriptorRanges);
+		rootParams[0].DescriptorTable.pDescriptorRanges = descriptorRanges;
+		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+		CD3DX12_STATIC_SAMPLER_DESC samplers[1]{};
+		samplers->Init(0);
+
 		D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSigDesc{};
 		rootSigDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_1;
-		rootSigDesc.Desc_1_1.NumParameters = 0;
-		rootSigDesc.Desc_1_1.pParameters = nullptr;
-		rootSigDesc.Desc_1_1.NumStaticSamplers = 0;
-		rootSigDesc.Desc_1_1.pStaticSamplers = nullptr;
+		rootSigDesc.Desc_1_1.NumParameters = _countof(rootParams);
+		rootSigDesc.Desc_1_1.pParameters = rootParams;
+		rootSigDesc.Desc_1_1.NumStaticSamplers = _countof(samplers);
+		rootSigDesc.Desc_1_1.pStaticSamplers = samplers;
 		rootSigDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		ComPtr<ID3DBlob> rootSigBinary, errorBinary;
@@ -86,10 +104,10 @@ void Renderer::create(uint32_t width, uint32_t height, GLFWwindow* window)
 
 		// 頂点バッファーの作成
 		std::vector<Mesh::VertexData> vertices = {
-			{{-0.5f,  0.5f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}}, // left-top
-			{{ 0.5f,  0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}}, // right-top
-			{{ 0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}, // right-down
-			{{-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 0.0f, 1.0f}}, // left-down
+			{{-0.5f,  0.5f, 0.0f}, {0.0f, 0.0f}}, // left-top
+			{{ 0.5f,  0.5f, 0.0f}, {1.0f, 0.0f}}, // right-top
+			{{ 0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}}, // right-down
+			{{-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}}, // left-down
 		};
 
 		// インデックスバッファーの作成
@@ -98,7 +116,9 @@ void Renderer::create(uint32_t width, uint32_t height, GLFWwindow* window)
 		};
 
 		auto mesh = MeshGenerator::generateMesh(vertices, indices);
-		mModel = ModelGenerator::generateModel(mesh);
+		auto texture = TextureLoader::loadTextureFromFile(L"Assets/vulkan14.jpg");
+		auto material = MaterialGenerator::generateMaterial(texture);
+		mModel = ModelGenerator::generateModel(mesh, material);
 
 		// ImGuiの初期化
 		mImGui.initialize(window);
@@ -135,9 +155,6 @@ void Renderer::begin()
 	// コマンド書き込み開始
 	mCmdContext.begin(frameData.commandAllocator.Get(), mPipelineState.Get());
 
-	// ImGuiの描画開始
-	mImGui.begin();
-
 	// ルートシグネチャのセット
 	mCmdContext.setRootSignature(mRootSignature.Get());
 
@@ -155,6 +172,9 @@ void Renderer::begin()
 	// バリアで画面に書き込める状態にする
 	mCmdContext.transitionBarrier(mSwapChain.getBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
+	// ImGuiの描画開始
+	mImGui.begin();
+
 	// 画面をクリア
 	auto handle = mSwapChain.getHandle();
 	FLOAT clearColors[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -170,11 +190,11 @@ void Renderer::end()
 
 	auto& frameData = mFrameDatas[mCurrentFrameIndex];
 
-	// バリアを元の状態に戻す
-	mCmdContext.transitionBarrier(mSwapChain.getBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-
 	// ImGuiの描画終了
 	mImGui.end(mCmdContext.getCommandLists());
+
+	// バリアを元の状態に戻す
+	mCmdContext.transitionBarrier(mSwapChain.getBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
 	// コマンドの書き込みを終了
 	mCmdContext.end();
@@ -202,5 +222,8 @@ void Renderer::resizeSwapchain(UINT width, UINT height)
 
 void Renderer::drawModel(Model& model)
 {
+	auto& heap = GraphicsCore::getTextureDescriptorAllocator();
+	mCmdContext.setDescriptorHeaps(heap.getDescriptorHeap());
+	mCmdContext.setDescriptorTable(0, model.material.texture.handle.gpuHandle);
 	mCmdContext.drawIndxed(model.indexCount, 1, model.vbView, model.ibView);
 }

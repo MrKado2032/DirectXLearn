@@ -107,7 +107,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source\pch;C:\Users\abyss\Desktop\ライブラリ\glfw\include;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source\pch;C:\Users\abyss\Desktop\ライブラリ\glfw\include;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\vendor;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\vendor\d3dx12;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,10 +141,13 @@
     <ClCompile Include="source\D3D12\DescriptorAllocator.cpp" />
     <ClCompile Include="source\D3D12\DeviceContext.cpp" />
     <ClCompile Include="source\D3D12\GraphicsCore.cpp" />
+    <ClCompile Include="source\D3D12\Material.cpp" />
     <ClCompile Include="source\D3D12\Mesh.cpp" />
     <ClCompile Include="source\D3D12\Model.cpp" />
+    <ClCompile Include="source\D3D12\ResourceUploader.cpp" />
     <ClCompile Include="source\D3D12\ShaderLoader.cpp" />
     <ClCompile Include="source\D3D12\SwapChain.cpp" />
+    <ClCompile Include="source\D3D12\Texture.cpp" />
     <ClCompile Include="source\main.cpp" />
     <ClCompile Include="source\pch\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -183,10 +186,13 @@
     <ClInclude Include="source\D3D12\DescriptorAllocator.h" />
     <ClInclude Include="source\D3D12\DeviceContext.h" />
     <ClInclude Include="source\D3D12\GraphicsCore.h" />
+    <ClInclude Include="source\D3D12\Material.h" />
     <ClInclude Include="source\D3D12\Mesh.h" />
     <ClInclude Include="source\D3D12\Model.h" />
+    <ClInclude Include="source\D3D12\ResourceUploader.h" />
     <ClInclude Include="source\D3D12\ShaderLoader.h" />
     <ClInclude Include="source\D3D12\SwapChain.h" />
+    <ClInclude Include="source\D3D12\Texture.h" />
     <ClInclude Include="source\pch\pch.h" />
     <ClInclude Include="source\Core\Renderer.h" />
     <ClInclude Include="source\Util\Helper.h" />
@@ -201,11 +207,19 @@
     <ClInclude Include="vendor\DX12-Imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="source\Shaders\BasicShader.hlsl">
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets" Condition="Exists('..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtex_uwp.2025.10.28.1\build\native\directxtex_uwp.targets'))" />
+  </Target>
 </Project>

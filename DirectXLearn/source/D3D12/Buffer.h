@@ -10,11 +10,13 @@ namespace util {
 	struct BufferCreateInfo {
 		D3D12_HEAP_TYPE heapType;
 		UINT64 width;
-		UINT height;
+		UINT height = 1;
 		D3D12_RESOURCE_DIMENSION dimension;
 		DXGI_FORMAT format;
 		D3D12_TEXTURE_LAYOUT layout;
 		D3D12_RESOURCE_STATES initState;
+		UINT16 mipLevels = 1;
+		UINT16 depthArraySize = 1;
 		BOOL bMapping = TRUE;
 	};
 
@@ -32,11 +34,11 @@ namespace util {
 		resDesc.Height = info.height;
 		resDesc.Dimension = info.dimension;
 		resDesc.Format = info.format;
-		resDesc.MipLevels = 1;
+		resDesc.MipLevels = info.mipLevels;
 		resDesc.SampleDesc.Count = 1;
 		resDesc.SampleDesc.Quality = 0;
 		resDesc.Alignment = 0;
-		resDesc.DepthOrArraySize = 1;
+		resDesc.DepthOrArraySize = info.depthArraySize;
 		resDesc.Layout = info.layout;
 
 		util::ThrowIfFailed(pDevice->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &resDesc, info.initState, nullptr, IID_PPV_ARGS(ppResource)));

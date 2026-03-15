@@ -3,6 +3,10 @@
 
 int main() {
 
+	if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED))) {
+		return EXIT_FAILURE;
+	}
+
 	try {
 		Application app;
 		app.run();

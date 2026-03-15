@@ -40,6 +40,16 @@ void CommandContext::setRootSignature(ID3D12RootSignature* pRootsignature)
 	mCommandList->SetGraphicsRootSignature(pRootsignature);
 }
 
+void CommandContext::setDescriptorHeaps(ID3D12DescriptorHeap* pHeap)
+{
+	mCommandList->SetDescriptorHeaps(1, &pHeap);
+}
+
+void CommandContext::setDescriptorTable(UINT rootParamIndex, const D3D12_GPU_DESCRIPTOR_HANDLE& handle)
+{
+	mCommandList->SetGraphicsRootDescriptorTable(rootParamIndex, handle);
+}
+
 /// <summary>
 /// バリアの遷移
 /// </summary>

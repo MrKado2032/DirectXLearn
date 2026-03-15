@@ -17,6 +17,8 @@ public:
 	void end();
 
 	void setRootSignature(ID3D12RootSignature* pRootsignature);
+	void setDescriptorHeaps(ID3D12DescriptorHeap* pHeap);
+	void setDescriptorTable(UINT rootParamIndex, const D3D12_GPU_DESCRIPTOR_HANDLE& handle);
 	void transitionBarrier(ID3D12Resource* pResource, D3D12_RESOURCE_STATES before, D3D12_RESOURCE_STATES after);
 	void setViewPort(D3D12_VIEWPORT& viewport);
 	void setScissorRect(D3D12_RECT& scissorRect);

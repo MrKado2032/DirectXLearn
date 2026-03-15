@@ -4,7 +4,7 @@ struct Mesh {
 
 	struct VertexData {
 		DirectX::XMFLOAT3 pos;
-		DirectX::XMFLOAT4 col;
+		DirectX::XMFLOAT2 uv;
 	};
 
 	std::vector<VertexData> vertices;

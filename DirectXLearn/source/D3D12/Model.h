@@ -1,5 +1,6 @@
 #pragma once
 #include "Mesh.h"
+#include "Material.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -9,6 +10,7 @@ struct Model {
 	D3D12_VERTEX_BUFFER_VIEW vbView{};
 	D3D12_INDEX_BUFFER_VIEW ibView{};
 	UINT indexCount = 0;
+	Material material{};
 };
 
 
@@ -20,7 +22,7 @@ public:
 	ModelGenerator(const ModelGenerator&) = delete;
 	ModelGenerator operator=(const ModelGenerator&) = delete;
 
-	static Model generateModel(const Mesh& mesh);
+	static Model generateModel(const Mesh& mesh, const Material& material);
 
 private:
 
