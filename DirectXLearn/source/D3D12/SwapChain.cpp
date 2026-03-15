@@ -3,6 +3,7 @@
 
 #include "Util/Helper.h"
 #include "DeviceContext.h"
+#include "GraphicsCore.h"
 
 SwapChain::SwapChain()
 {
@@ -38,7 +39,7 @@ void SwapChain::create(const DeviceContext& context, uint32_t w, uint32_t h, HWN
 
 	util::ThrowIfFailed(factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));	// ALT + ENTER 操作をしない
 
-	mRtvDescriptorAllocator.create(device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, DeviceContext::MaxFrameCount + 1, false);	// ダブルバッファリングだが余裕をもって3つ分確保
+	mRtvDescriptorAllocator.create(device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, DeviceContext::MaxFrameCount, false);
 
 	// レンダーターゲットビューの作成
 	mFrameResources.resize(DeviceContext::MaxFrameCount);
@@ -66,4 +67,23 @@ void SwapChain::destroy()
 void SwapChain::present()
 {
 	mSwapchain->Present(1, 0);
+}
+
+void SwapChain::resize(UINT width, UINT height)
+{
+	auto& context = GraphicsCore::getDeviceContext();
+	context.flushGPU();
+
+	for (auto& resource : mFrameResources) {
+		resource.backBuffer.Reset();
+	}
+
+	util::ThrowIfFailed(mSwapchain->ResizeBuffers(DeviceContext::MaxFrameCount, width, height, DXGI_FORMAT_UNKNOWN, 0));
+
+	// レンダーターゲットビューの作成
+	mFrameResources.resize(DeviceContext::MaxFrameCount);
+	for (UINT i = 0; i < DeviceContext::MaxFrameCount; i++) {
+		util::ThrowIfFailed(mSwapchain->GetBuffer(i, IID_PPV_ARGS(mFrameResources[i].backBuffer.GetAddressOf())));
+		context.getDevice()->CreateRenderTargetView(mFrameResources[i].backBuffer.Get(), nullptr, mFrameResources[i].handle.cpuHandle);
+	}
 }

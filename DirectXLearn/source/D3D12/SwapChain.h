@@ -17,6 +17,7 @@ public:
 	void destroy();
 
 	void present();
+	void resize(UINT width, UINT height);
 
 	ID3D12Resource* getBackBuffer() const {
 		auto imageIdx = mSwapchain->GetCurrentBackBufferIndex();

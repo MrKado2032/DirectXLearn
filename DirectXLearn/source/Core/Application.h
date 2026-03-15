@@ -16,6 +16,8 @@ protected:
 	virtual void update(float dt);
 
 private:
+	static void resize(GLFWwindow* window, int width, int height);
+
 	GLFWwindow* mWindow = nullptr;
 	Renderer mRenderer{};
 };

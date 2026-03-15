@@ -21,6 +21,8 @@ public:
 	DescriptorHandle allocate();
 	void free(DescriptorHandle& handle);
 
+	ID3D12DescriptorHeap* getDescriptorHeap() const { return mDescriptorHeap.Get(); }
+
 private:
 	ComPtr<ID3D12DescriptorHeap> mDescriptorHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE mStartCpuHandle{};

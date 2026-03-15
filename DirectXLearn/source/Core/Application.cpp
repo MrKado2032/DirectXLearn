@@ -27,7 +27,10 @@ Application::Application()
 	GraphicsCore::initialize();
 
 	// レンダラーの作成
-	mRenderer.create(1280, 720, glfwGetWin32Window(mWindow));
+	mRenderer.create(1280, 720, mWindow);
+
+	glfwSetWindowUserPointer(mWindow, this);
+	glfwSetFramebufferSizeCallback(mWindow, resize);
 }
 
 Application::~Application()
@@ -60,4 +63,17 @@ void Application::start()
 
 void Application::update(float dt)
 {
+	ImGui::Begin("Information");
+	ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
+	ImGui::End();
+}
+
+void Application::resize(GLFWwindow* window, int width, int height)
+{
+	// ウィンドウに紐付けたポインタを取り出し、Application クラスにキャストする
+	auto app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
+
+	if (app) {
+		app->mRenderer.resizeSwapchain(static_cast<UINT>(width), static_cast<UINT>(height));
+	}
 }

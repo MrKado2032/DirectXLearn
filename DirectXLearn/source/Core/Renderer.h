@@ -4,6 +4,7 @@
 #include "D3D12/SwapChain.h"
 #include "D3D12/Model.h"
 #include "D3D12/ShaderLoader.h"
+#include "D3D12/D3D12ImGui.h"
 
 struct Model;
 class Renderer {
@@ -14,11 +15,13 @@ public:
 	Renderer(const Renderer&) = delete;
 	Renderer operator=(const Renderer&) = delete;
 
-	void create(uint32_t width, uint32_t height, HWND hWnd);
+	void create(uint32_t width, uint32_t height, GLFWwindow* window);
 	void destroy();
 
 	void begin();
 	void end();
+
+	void resizeSwapchain(UINT width, UINT height);
 
 	void drawModel(Model& model);
 
@@ -32,6 +35,10 @@ private:
 	SwapChain mSwapChain{};
 
 	FrameData mFrameDatas[DeviceContext::MaxFrameCount]{};
+
+	D3D12ImGui mImGui;
+
+	UINT mCurrentWidth = 0, mCurrentHeight = 0;
 
 	ComPtr<ID3D12RootSignature> mRootSignature;
 	ComPtr<ID3D12PipelineState> mPipelineState;

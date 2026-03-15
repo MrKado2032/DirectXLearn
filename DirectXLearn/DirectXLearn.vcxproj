@@ -107,7 +107,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source\pch;C:\Users\abyss\Desktop\ライブラリ\glfw\include;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source\pch;C:\Users\abyss\Desktop\ライブラリ\glfw\include;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\source;C:\Users\abyss\source\repos\DirectXLearn\DirectXLearn\vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,6 +135,9 @@
     <ClCompile Include="source\Core\Application.cpp" />
     <ClCompile Include="source\D3D12\Buffer.cpp" />
     <ClCompile Include="source\D3D12\CommandContext.cpp" />
+    <ClCompile Include="source\D3D12\D3D12ImGui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="source\D3D12\DescriptorAllocator.cpp" />
     <ClCompile Include="source\D3D12\DeviceContext.cpp" />
     <ClCompile Include="source\D3D12\GraphicsCore.cpp" />
@@ -147,11 +150,36 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\Core\Renderer.cpp" />
+    <ClCompile Include="vendor\DX12-Imgui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\DX12-Imgui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\DX12-Imgui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\DX12-Imgui\imgui_impl_dx12.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\DX12-Imgui\imgui_impl_glfw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\DX12-Imgui\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\DX12-Imgui\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\DX12-Imgui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Core\Application.h" />
     <ClInclude Include="source\D3D12\Buffer.h" />
     <ClInclude Include="source\D3D12\CommandContext.h" />
+    <ClInclude Include="source\D3D12\D3D12ImGui.h" />
     <ClInclude Include="source\D3D12\DescriptorAllocator.h" />
     <ClInclude Include="source\D3D12\DeviceContext.h" />
     <ClInclude Include="source\D3D12\GraphicsCore.h" />
@@ -162,6 +190,15 @@
     <ClInclude Include="source\pch\pch.h" />
     <ClInclude Include="source\Core\Renderer.h" />
     <ClInclude Include="source\Util\Helper.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imconfig.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imgui.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imgui_impl_win32.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\DX12-Imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="source\Shaders\BasicShader.hlsl">

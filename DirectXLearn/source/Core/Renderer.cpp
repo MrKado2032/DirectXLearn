@@ -15,12 +15,12 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::create(uint32_t width, uint32_t height, HWND hWnd)
+void Renderer::create(uint32_t width, uint32_t height, GLFWwindow* window)
 {;
 	try {
 		auto const& context = GraphicsCore::getDeviceContext();
 
-		mSwapChain.create(context, width, height, hWnd);
+		mSwapChain.create(context, width, height, glfwGetWin32Window(window));
 	
 		// コマンドアロケーターの作成
 		auto device = context.getDevice();
@@ -29,6 +29,11 @@ void Renderer::create(uint32_t width, uint32_t height, HWND hWnd)
 		}
 
 		mCmdContext.create(device, mFrameDatas[0].commandAllocator.Get(), D3D12_COMMAND_LIST_TYPE_DIRECT);
+
+		int width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		mCurrentWidth = static_cast<UINT>(width);
+		mCurrentHeight = static_cast<UINT>(height);
 
 
 		// ルートシグネチャの作成 (後にリファクタリング) 
@@ -94,6 +99,9 @@ void Renderer::create(uint32_t width, uint32_t height, HWND hWnd)
 
 		auto mesh = MeshGenerator::generateMesh(vertices, indices);
 		mModel = ModelGenerator::generateModel(mesh);
+
+		// ImGuiの初期化
+		mImGui.initialize(window);
 	}
 	catch (std::exception& e) {
 		util::Print(e.what());
@@ -108,6 +116,8 @@ void Renderer::destroy()
 	for (auto& frame : mFrameDatas) {
 		frame.fenceValue = completedValue;
 	}
+
+	mImGui.destroy();
 
 	mSwapChain.destroy();
 	mCmdContext.destroy();
@@ -125,18 +135,21 @@ void Renderer::begin()
 	// コマンド書き込み開始
 	mCmdContext.begin(frameData.commandAllocator.Get(), mPipelineState.Get());
 
+	// ImGuiの描画開始
+	mImGui.begin();
+
 	// ルートシグネチャのセット
 	mCmdContext.setRootSignature(mRootSignature.Get());
 
 	// ビューポート
 	D3D12_VIEWPORT viewport{};
-	viewport.Width = 1280;
-	viewport.Height = 720;
+	viewport.Width = static_cast<FLOAT>(mCurrentWidth);
+	viewport.Height = static_cast<FLOAT>(mCurrentHeight);
 	mCmdContext.setViewPort(viewport);
 
 	D3D12_RECT scissorRect{};
-	scissorRect.right = 1280;
-	scissorRect.bottom = 720;
+	scissorRect.right = static_cast<LONG>(mCurrentWidth);
+	scissorRect.bottom = static_cast<LONG>(mCurrentHeight);
 	mCmdContext.setScissorRect(scissorRect);
 
 	// バリアで画面に書き込める状態にする
@@ -160,6 +173,9 @@ void Renderer::end()
 	// バリアを元の状態に戻す
 	mCmdContext.transitionBarrier(mSwapChain.getBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
+	// ImGuiの描画終了
+	mImGui.end(mCmdContext.getCommandLists());
+
 	// コマンドの書き込みを終了
 	mCmdContext.end();
 
@@ -175,6 +191,13 @@ void Renderer::end()
 
 	// フレームを次に移動
 	mCurrentFrameIndex = (mCurrentFrameIndex + 1) % DeviceContext::MaxFrameCount;
+}
+
+void Renderer::resizeSwapchain(UINT width, UINT height)
+{
+	mCurrentWidth = width;
+	mCurrentHeight = height;
+	mSwapChain.resize(width, height);
 }
 
 void Renderer::drawModel(Model& model)
