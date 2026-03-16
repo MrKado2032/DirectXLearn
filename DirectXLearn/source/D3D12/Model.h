@@ -1,16 +1,27 @@
 #pragma once
 #include "Mesh.h"
 #include "Material.h"
+#include "Buffer.h"
 
 using Microsoft::WRL::ComPtr;
 
+struct Transform {
+	std::unique_ptr<util::ConstantBuffer<DirectX::XMMATRIX>> constBuffer;
+	DirectX::XMMATRIX worldMatrix;
+
+	void update(const DirectX::XMMATRIX& viewProj) const {
+		auto mvp = worldMatrix * viewProj;
+		constBuffer->update(DirectX::XMMatrixTranspose(mvp));
+	}
+};
+
+class CommandContext;
 struct Model {
-	ComPtr<ID3D12Resource> vertexBuffer;
-	ComPtr<ID3D12Resource> indexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW vbView{};
-	D3D12_INDEX_BUFFER_VIEW ibView{};
-	UINT indexCount = 0;
+	std::shared_ptr<Mesh> mesh;
 	Material material{};
+	Transform transform;
+
+	void draw(CommandContext& ctx);
 };
 
 
@@ -22,7 +33,7 @@ public:
 	ModelGenerator(const ModelGenerator&) = delete;
 	ModelGenerator operator=(const ModelGenerator&) = delete;
 
-	static Model generateModel(const Mesh& mesh, const Material& material);
+	static Model generateModel(const std::shared_ptr<Mesh>& mesh, const Material& material);
 
 private:
 

@@ -5,7 +5,7 @@
 
 namespace GraphicsCore {
 	static DeviceContext mContext;
-	static DescriptorAllocator mTextureDescriptorAllocator;
+	static DescriptorAllocator mSrvCbvUavAllocator;
 	static ResourceUploader mResourceUploader;
 
 	void initialize()
@@ -13,7 +13,7 @@ namespace GraphicsCore {
 		try {
 			mContext.create();
 			mResourceUploader.initialize();
-			mTextureDescriptorAllocator.create(mContext.getDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 128, true);
+			mSrvCbvUavAllocator.create(mContext.getDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1000, true);
 		}
 		catch (std::exception& e) {
 			util::Print(e.what());
@@ -23,15 +23,15 @@ namespace GraphicsCore {
 	void destroy()
 	{
 		mResourceUploader.destroy();
-		mTextureDescriptorAllocator.destroy();
+		mSrvCbvUavAllocator.destroy();
 		mContext.destroy();
 	}
 
 	DeviceContext& getDeviceContext(){
 		return mContext;
 	}
-	DescriptorAllocator& getTextureDescriptorAllocator(){
-		return mTextureDescriptorAllocator;
+	DescriptorAllocator& getSrvCbvUavAllocator(){
+		return mSrvCbvUavAllocator;
 	}
 	ResourceUploader& getResourceUploader(){
 		return mResourceUploader;

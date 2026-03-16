@@ -65,7 +65,7 @@ void TextureLoader::createTexture(Texture& texture)
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 
-	auto& textureAllocator = GraphicsCore::getTextureDescriptorAllocator();
+	auto& textureAllocator = GraphicsCore::getSrvCbvUavAllocator();
 	auto& context = GraphicsCore::getDeviceContext();
 
 	auto descriptorHandle = textureAllocator.allocate();

@@ -50,6 +50,11 @@ void CommandContext::setDescriptorTable(UINT rootParamIndex, const D3D12_GPU_DES
 	mCommandList->SetGraphicsRootDescriptorTable(rootParamIndex, handle);
 }
 
+void CommandContext::setConstantBuffer(UINT rootParamIndex, D3D12_GPU_VIRTUAL_ADDRESS address)
+{
+	mCommandList->SetGraphicsRootConstantBufferView(rootParamIndex, address);
+}
+
 /// <summary>
 /// バリアの遷移
 /// </summary>

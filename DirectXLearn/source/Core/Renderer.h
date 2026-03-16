@@ -20,12 +20,10 @@ public:
 	void create(uint32_t width, uint32_t height, GLFWwindow* window);
 	void destroy();
 
-	void begin();
+	CommandContext& begin();
 	void end();
 
 	void resizeSwapchain(UINT width, UINT height);
-
-	void drawModel(Model& model);
 
 private:
 	struct FrameData {
@@ -48,6 +46,5 @@ private:
 	uint32_t mCurrentFrameIndex = 0;
 
 	ShaderLoader shaderLoader;
-	Model mModel;
 
 };

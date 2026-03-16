@@ -53,4 +53,65 @@ namespace util {
 		(*ppResource)->Unmap(0, nullptr);
 	}
 
+	template<typename T>
+	class ConstantBuffer {
+	public:
+		ConstantBuffer() {
+
+		}
+		~ConstantBuffer() {
+
+		}
+
+		ConstantBuffer(const ConstantBuffer&) = delete;
+		ConstantBuffer operator=(const ConstantBuffer&) = delete;
+
+		void create(ID3D12Device* pDevice) {
+
+			const UINT64 bufferSize = (sizeof(T) + 0xff) & ~0xff;
+
+			auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+			auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+
+			util::ThrowIfFailed(
+				pDevice->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(constBuffer.GetAddressOf()))
+			);
+
+			if (mappedData != nullptr) {
+				mappedData = nullptr;
+			}
+
+			util::ThrowIfFailed(constBuffer->Map(0, nullptr, reinterpret_cast<void**>(&mappedData)));
+		}
+
+		void update(const T& data) {
+			if (mappedData) {
+				std::memcpy(mappedData, &data, sizeof(T));
+			}
+		}
+
+		void destroy() {
+			if (constBuffer) {
+				constBuffer->Unmap(0, nullptr);
+				mappedData = nullptr;
+				constBuffer.Reset();
+			}
+		}
+
+		D3D12_GPU_VIRTUAL_ADDRESS getGpuVirtualAddress() {
+			return constBuffer->GetGPUVirtualAddress();
+		}
+
+		void createView(ID3D12Device* pDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle) {
+			D3D12_CONSTANT_BUFFER_VIEW_DESC viewDesc{};
+			viewDesc.BufferLocation = constBuffer->GetGPUVirtualAddress();
+			viewDesc.SizeInBytes = (sizeof(T) + 0xff) & ~0xff;
+			pDevice->CreateConstantBufferView(&viewDesc, handle);
+		}
+
+	private:
+		T* mappedData = nullptr;
+		ComPtr<ID3D12Resource> constBuffer;
+	};
+
 }

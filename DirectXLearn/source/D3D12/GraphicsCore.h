@@ -8,6 +8,6 @@ namespace GraphicsCore {
 	void initialize();
 	void destroy();
 	DeviceContext& getDeviceContext();
-	DescriptorAllocator& getTextureDescriptorAllocator();
+	DescriptorAllocator& getSrvCbvUavAllocator();
 	ResourceUploader& getResourceUploader();
 }

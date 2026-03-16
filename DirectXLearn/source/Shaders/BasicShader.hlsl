@@ -10,10 +10,15 @@ struct PSOutput
     float2 uv : TEXCOORD;
 };
 
+cbuffer mat : register(b0)
+{
+    matrix mat;
+}
+
 PSOutput VSMain(VSOutput vsout)
 {
     PSOutput psout;
-    psout.pos = float4(vsout.pos, 1.0);
+    psout.pos = mul(float4(vsout.pos, 1.0), mat);
     psout.uv = vsout.uv;
     return psout;
 }

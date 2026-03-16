@@ -46,11 +46,15 @@ void Renderer::create(uint32_t width, uint32_t height, GLFWwindow* window)
 		descriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		descriptorRanges[0].RegisterSpace = 0;
 
-		D3D12_ROOT_PARAMETER1 rootParams[1]{};
+		D3D12_ROOT_PARAMETER1 rootParams[2]{};
 		rootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		rootParams[0].DescriptorTable.NumDescriptorRanges = _countof(descriptorRanges);
 		rootParams[0].DescriptorTable.pDescriptorRanges = descriptorRanges;
 		rootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+		rootParams[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		rootParams[1].Constants.ShaderRegister = 0;
+		rootParams[1].Constants.RegisterSpace = 0;
+		rootParams[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
 		CD3DX12_STATIC_SAMPLER_DESC samplers[1]{};
 		samplers->Init(0);
@@ -102,24 +106,6 @@ void Renderer::create(uint32_t width, uint32_t height, GLFWwindow* window)
 
 		util::ThrowIfFailed(device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
 
-		// 頂点バッファーの作成
-		std::vector<Mesh::VertexData> vertices = {
-			{{-0.5f,  0.5f, 0.0f}, {0.0f, 0.0f}}, // left-top
-			{{ 0.5f,  0.5f, 0.0f}, {1.0f, 0.0f}}, // right-top
-			{{ 0.5f, -0.5f, 0.0f}, {1.0f, 1.0f}}, // right-down
-			{{-0.5f, -0.5f, 0.0f}, {0.0f, 1.0f}}, // left-down
-		};
-
-		// インデックスバッファーの作成
-		std::vector<DWORD> indices = {
-			0, 2, 3, 0, 1, 2
-		};
-
-		auto mesh = MeshGenerator::generateMesh(vertices, indices);
-		auto texture = TextureLoader::loadTextureFromFile(L"Assets/vulkan14.jpg");
-		auto material = MaterialGenerator::generateMaterial(texture);
-		mModel = ModelGenerator::generateModel(mesh, material);
-
 		// ImGuiの初期化
 		mImGui.initialize(window);
 	}
@@ -143,7 +129,7 @@ void Renderer::destroy()
 	mCmdContext.destroy();
 }
 
-void Renderer::begin()
+CommandContext& Renderer::begin()
 {
 	auto& context = GraphicsCore::getDeviceContext();
 
@@ -157,6 +143,10 @@ void Renderer::begin()
 
 	// ルートシグネチャのセット
 	mCmdContext.setRootSignature(mRootSignature.Get());
+
+	// SRVヒープのバインド
+	auto& heap = GraphicsCore::getSrvCbvUavAllocator();
+	mCmdContext.setDescriptorHeaps(heap.getDescriptorHeap());
 
 	// ビューポート
 	D3D12_VIEWPORT viewport{};
@@ -180,8 +170,7 @@ void Renderer::begin()
 	FLOAT clearColors[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
 	mCmdContext.clearRenderTarget(handle.cpuHandle, clearColors);
 
-	// 四角描画
-	drawModel(mModel);
+	return mCmdContext;
 }
 
 void Renderer::end()
@@ -218,12 +207,4 @@ void Renderer::resizeSwapchain(UINT width, UINT height)
 	mCurrentWidth = width;
 	mCurrentHeight = height;
 	mSwapChain.resize(width, height);
-}
-
-void Renderer::drawModel(Model& model)
-{
-	auto& heap = GraphicsCore::getTextureDescriptorAllocator();
-	mCmdContext.setDescriptorHeaps(heap.getDescriptorHeap());
-	mCmdContext.setDescriptorTable(0, model.material.texture.handle.gpuHandle);
-	mCmdContext.drawIndxed(model.indexCount, 1, model.vbView, model.ibView);
 }

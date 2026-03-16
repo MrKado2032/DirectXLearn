@@ -193,6 +193,7 @@
     <ClInclude Include="source\D3D12\ShaderLoader.h" />
     <ClInclude Include="source\D3D12\SwapChain.h" />
     <ClInclude Include="source\D3D12\Texture.h" />
+    <ClInclude Include="source\Math\MatrixHelper.h" />
     <ClInclude Include="source\pch\pch.h" />
     <ClInclude Include="source\Core\Renderer.h" />
     <ClInclude Include="source\Util\Helper.h" />

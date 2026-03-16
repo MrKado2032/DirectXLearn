@@ -1,5 +1,7 @@
 #pragma once
 
+using Microsoft::WRL::ComPtr;
+
 struct Mesh {
 
 	struct VertexData {
@@ -7,8 +9,11 @@ struct Mesh {
 		DirectX::XMFLOAT2 uv;
 	};
 
-	std::vector<VertexData> vertices;
-	std::vector<DWORD> indices;
+	ComPtr<ID3D12Resource> vertexBuffer;
+	ComPtr<ID3D12Resource> indexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW vbView{};
+	D3D12_INDEX_BUFFER_VIEW ibView{};
+	UINT indexCount = 0;
 
 	static D3D12_INPUT_LAYOUT_DESC getInputLayout();
 
@@ -22,7 +27,7 @@ public:
 	MeshGenerator(const MeshGenerator&) = delete;
 	MeshGenerator operator=(const MeshGenerator&) = delete;
 
-	static Mesh generateMesh(const std::vector<Mesh::VertexData>& vertices, const std::vector<DWORD>& indices);
+	static std::shared_ptr<Mesh> generateMesh(const std::vector<Mesh::VertexData>& vertices, const std::vector<DWORD>& indices);
 
 private:
 

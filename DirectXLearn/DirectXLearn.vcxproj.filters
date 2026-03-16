@@ -170,6 +170,9 @@
     <ClInclude Include="source\D3D12\Material.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\Math\MatrixHelper.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="source\Shaders\BasicShader.hlsl" />
