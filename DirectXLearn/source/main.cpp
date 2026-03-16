@@ -1,20 +1,30 @@
 #include "pch.h"
-#include "Core/Application.h"
+#include "MyEngineHeader.h"
 
-int main() {
+class SandboxApp : public Application {
+public:
+	SandboxApp() {
 
-	if (FAILED(CoInitializeEx(0, COINIT_MULTITHREADED))) {
-		return EXIT_FAILURE;
 	}
 
-	try {
-		Application app;
-		app.run();
-	}
-	catch (std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		return EXIT_FAILURE;
+	~SandboxApp() {
+
 	}
 
-	return EXIT_SUCCESS;
+private:
+
+
+protected:
+
+	void start() override {
+		createModel("TestImg");
+	}
+
+	void update(float dt) override {
+		Application::update(dt);
+	}
+};
+
+Application* createApplication() {
+	return new SandboxApp();
 }

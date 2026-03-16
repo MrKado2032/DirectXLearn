@@ -1,36 +1,24 @@
 #include "pch.h"
 #include "Application.h"
 
+#include "WindowManager.h"
 #include "D3D12/GraphicsCore.h"
 #include "Util/Helper.h"
 
 Application::Application()
 {
-	// ウインドウの初期化
-	if (!glfwInit()) {
-		util::Print("Failed to initialize glfw");
-		throw std::runtime_error("Failed to initialize glfw");
-	}
-
-	// 今回はDirectX12APIを使用するのでOpenGL使用しないに設定
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
 	// ウインドウの作成
-	mWindow = glfwCreateWindow(1280, 720, "LearnDirectX12", nullptr, nullptr);
-	if (!mWindow) {
-		util::Print("Failed to create window");
-		glfwTerminate();
-		throw std::runtime_error("Failed to create window");
-	}
+	WindowManager::initialize(1280, 720, "DirectX12Learn");
 
 	// GraphicsCoreの初期化
 	GraphicsCore::initialize();
 
 	// レンダラーの作成
-	mRenderer.create(1280, 720, mWindow);
+	mRenderer.create(1280, 720, WindowManager::getMainWindow()->getWindow());
 
-	glfwSetWindowUserPointer(mWindow, this);
-	glfwSetFramebufferSizeCallback(mWindow, resize);
+	// リサイズコールバックをセット
+	glfwSetWindowUserPointer(WindowManager::getMainWindow()->getWindow(), this);
+	glfwSetFramebufferSizeCallback(WindowManager::getMainWindow()->getWindow(), resize);
 }
 
 Application::~Application()
@@ -38,16 +26,16 @@ Application::~Application()
 	mRenderer.destroy();
 	mModelList.clear();
 	GraphicsCore::destroy();
-
-	glfwDestroyWindow(mWindow);
-	glfwTerminate();
+	WindowManager::destroy();
 }
 
 void Application::run()
 {
+	auto window = WindowManager::getMainWindow();
+
 	start();
-	while (!glfwWindowShouldClose(mWindow)) {
-		glfwPollEvents();
+	while (!window->shouldClose()) {
+		window->updateEvents();
 
 		auto& ctx = mRenderer.begin();	// 描画開始
 
@@ -58,7 +46,7 @@ void Application::run()
 	}
 }
 
-void Application::createModel()
+void Application::createModel(const std::string& key)
 {
 	std::vector<Mesh::VertexData> vertices = {
 		{{-1.0f,  1.0f, 0.0f}, {0.0f, 0.0f}}, // left-top
@@ -76,16 +64,16 @@ void Application::createModel()
 	auto material = MaterialGenerator::generateMaterial(texture);
 	auto model = ModelGenerator::generateModel(mesh, material);
 
-	mModelList.push_back(std::move(model));
+	mModelList.emplace(key, std::move(model));
 }
 
 void Application::start()
 {
-	createModel();
 }
 
 void Application::update(float dt)
 {
+	// テスト用（後に消すかリファクタリング）
 	ImGui::Begin("Information");
 	ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
 	ImGui::End();
@@ -98,7 +86,7 @@ void Application::update(float dt)
 void Application::render(CommandContext& ctx)
 {
 	for (auto& model : mModelList) {
-		model.draw(ctx);
+		model.second.draw(ctx);
 	}
 }
 
@@ -108,6 +96,7 @@ void Application::resize(GLFWwindow* window, int width, int height)
 	auto app = reinterpret_cast<Application*>(glfwGetWindowUserPointer(window));
 
 	if (app) {
+		WindowManager::getMainWindow()->setWindowSize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 		app->mRenderer.resizeSwapchain(static_cast<UINT>(width), static_cast<UINT>(height));
 	}
 }

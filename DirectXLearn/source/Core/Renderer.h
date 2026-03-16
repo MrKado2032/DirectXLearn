@@ -6,8 +6,6 @@
 #include "D3D12/ShaderLoader.h"
 #include "D3D12/D3D12ImGui.h"
 
-#include "D3D12/Texture.h"
-
 struct Model;
 class Renderer {
 public:

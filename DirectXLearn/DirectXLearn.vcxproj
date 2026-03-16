@@ -133,6 +133,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\Core\Application.cpp" />
+    <ClCompile Include="source\Core\Window.cpp" />
+    <ClCompile Include="source\Core\WindowManager.cpp" />
     <ClCompile Include="source\D3D12\Buffer.cpp" />
     <ClCompile Include="source\D3D12\CommandContext.cpp" />
     <ClCompile Include="source\D3D12\D3D12ImGui.cpp">
@@ -180,6 +182,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Core\Application.h" />
+    <ClInclude Include="source\Core\Entrypoint.h" />
+    <ClInclude Include="source\Core\Window.h" />
+    <ClInclude Include="source\Core\WindowManager.h" />
     <ClInclude Include="source\D3D12\Buffer.h" />
     <ClInclude Include="source\D3D12\CommandContext.h" />
     <ClInclude Include="source\D3D12\D3D12ImGui.h" />
@@ -194,6 +199,7 @@
     <ClInclude Include="source\D3D12\SwapChain.h" />
     <ClInclude Include="source\D3D12\Texture.h" />
     <ClInclude Include="source\Math\MatrixHelper.h" />
+    <ClInclude Include="source\MyEngineHeader.h" />
     <ClInclude Include="source\pch\pch.h" />
     <ClInclude Include="source\Core\Renderer.h" />
     <ClInclude Include="source\Util\Helper.h" />

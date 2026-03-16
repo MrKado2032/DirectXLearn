@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Model.h"
 
+#include "Core/WindowManager.h"
 #include "GraphicsCore.h"
 #include "Buffer.h"
 #include "Math/MatrixHelper.h"
@@ -16,9 +17,12 @@ Model ModelGenerator::generateModel(const std::shared_ptr<Mesh>& mesh, const Mat
 	// 定数バッファーの作成
 	model.transform.constBuffer = std::make_unique<util::ConstantBuffer<DirectX::XMMATRIX>>();
 	model.transform.constBuffer->create(context.getDevice());
-	
+
+	const uint32_t width = WindowManager::getMainWindow()->getWidth();
+	const uint32_t height = WindowManager::getMainWindow()->getHeight();
+
 	auto view = MatrixHelper::getDefaultViewMatrix();
-	auto projection = MatrixHelper::getDefaultProjectionMatrix(1280, 720);
+	auto projection = MatrixHelper::getDefaultProjectionMatrix(static_cast<int>(width), static_cast<int>(height));
 
 	model.transform.worldMatrix = DirectX::XMMatrixScaling(2, 1.3f, 1) * DirectX::XMMatrixRotationY(0.0f) * DirectX::XMMatrixTranslation(0, 0, 0);
 	model.transform.update(view * projection);

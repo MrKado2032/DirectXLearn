@@ -4,7 +4,6 @@
 #include "Util/Helper.h"
 
 #include "D3D12/Mesh.h"
-#include "D3D12/Material.h"
 
 #include "D3D12/GraphicsCore.h"
 
@@ -134,7 +133,7 @@ CommandContext& Renderer::begin()
 	auto& context = GraphicsCore::getDeviceContext();
 
 	auto& frameData = mFrameDatas[mCurrentFrameIndex];	// 現在のフレームデータを取得
-	context.waitForFence(frameData.fenceValue);		// 同期をとる
+	context.waitForFence(frameData.fenceValue);			// 同期をとる
 
 	util::ThrowIfFailed(frameData.commandAllocator->Reset());
 	

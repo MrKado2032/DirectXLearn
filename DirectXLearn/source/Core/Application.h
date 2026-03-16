@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer.h"
 
+struct GLFWwindow;
 class Application {
 public:
 	Application();
@@ -11,7 +12,7 @@ public:
 
 	void run();
 
-	void createModel();
+	void createModel(const std::string& key);
 
 protected:
 	virtual void start();
@@ -21,8 +22,9 @@ private:
 	void render(CommandContext& ctx);
 	static void resize(GLFWwindow* window, int width, int height);
 
-	GLFWwindow* mWindow = nullptr;
 	Renderer mRenderer{};
 
-	std::vector<Model> mModelList;
+	std::unordered_map<std::string, Model> mModelList;
 };
+
+Application* createApplication();
