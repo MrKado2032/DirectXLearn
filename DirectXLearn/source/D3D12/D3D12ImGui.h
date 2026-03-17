@@ -9,7 +9,7 @@ public:
 	D3D12ImGui(const D3D12ImGui&) = delete;
 	D3D12ImGui operator=(const D3D12ImGui&) = delete;
 
-	void initialize(GLFWwindow* window);
+	void initialize(GLFWwindow* window, uint32_t frameCount);
 	void destroy();
 
 	void begin();

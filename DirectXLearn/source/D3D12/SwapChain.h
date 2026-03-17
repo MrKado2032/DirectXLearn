@@ -13,7 +13,7 @@ public:
 	SwapChain(const SwapChain&) = delete;
 	SwapChain operator=(const SwapChain&) = delete;
 
-	void create(const DeviceContext& context, uint32_t w, uint32_t h, HWND hWnd);
+	void create(uint32_t bufferCount, uint32_t w, uint32_t h, HWND hWnd);
 	void destroy();
 
 	void present();
@@ -38,4 +38,6 @@ private:
 	ComPtr<IDXGISwapChain4> mSwapchain;
 	DescriptorAllocator mRtvDescriptorAllocator;
 	std::vector<FrameResource> mFrameResources;
+
+	uint32_t mBufferCount = 0;
 };

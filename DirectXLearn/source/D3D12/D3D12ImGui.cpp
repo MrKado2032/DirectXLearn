@@ -6,7 +6,7 @@
 #include "DX12-Imgui/imgui_impl_dx12.h"
 #include "DX12-Imgui/imgui_impl_glfw.h"
 
-void D3D12ImGui::initialize(GLFWwindow* window)
+void D3D12ImGui::initialize(GLFWwindow* window, uint32_t frameCount)
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -14,10 +14,10 @@ void D3D12ImGui::initialize(GLFWwindow* window)
 
 	auto& context = GraphicsCore::getDeviceContext();
 
-	mImguiSrvAllocator.create(context.getDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, DeviceContext::MaxFrameCount, true);
+	mImguiSrvAllocator.create(context.getDevice(), D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, frameCount, true);
 	auto fontDesc = mImguiSrvAllocator.allocate();
 
-	ImGui_ImplDX12_Init(context.getDevice(), DeviceContext::MaxFrameCount, DXGI_FORMAT_R8G8B8A8_UNORM, mImguiSrvAllocator.getDescriptorHeap(), fontDesc.cpuHandle, fontDesc.gpuHandle);
+	ImGui_ImplDX12_Init(context.getDevice(), frameCount, DXGI_FORMAT_R8G8B8A8_UNORM, mImguiSrvAllocator.getDescriptorHeap(), fontDesc.cpuHandle, fontDesc.gpuHandle);
 
 	// --- 追加: フォントアトラスを明示的にビルドする ---
 	unsigned char* pixels;

@@ -4,8 +4,6 @@ using Microsoft::WRL::ComPtr;
 
 class DeviceContext {
 public:
-	static constexpr uint32_t MaxFrameCount = 2;
-
 	DeviceContext();
 	~DeviceContext();
 

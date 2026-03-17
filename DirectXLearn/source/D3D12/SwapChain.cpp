@@ -2,7 +2,6 @@
 #include "SwapChain.h"
 
 #include "Util/Helper.h"
-#include "DeviceContext.h"
 #include "GraphicsCore.h"
 
 SwapChain::SwapChain()
@@ -13,17 +12,19 @@ SwapChain::~SwapChain()
 {
 }
 
-void SwapChain::create(const DeviceContext& context, uint32_t w, uint32_t h, HWND hWnd)
+void SwapChain::create(uint32_t bufferCount, uint32_t w, uint32_t h, HWND hWnd)
 {
-	auto device = context.getDevice();
-	auto factory = context.getFactory();
-	auto gQueue = context.getGraphicsQueue();
+	auto device = GraphicsCore::getDeviceContext().getDevice();
+	auto factory = GraphicsCore::getDeviceContext().getFactory();
+	auto gQueue = GraphicsCore::getDeviceContext().getGraphicsQueue();
+
+	mBufferCount = bufferCount;
 
 	DXGI_SWAP_CHAIN_DESC1 swapchainDesc{};
 	swapchainDesc.Width = static_cast<UINT>(w);
 	swapchainDesc.Height = static_cast<UINT>(h);
 	swapchainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-	swapchainDesc.BufferCount = static_cast<UINT>(DeviceContext::MaxFrameCount);
+	swapchainDesc.BufferCount = static_cast<UINT>(bufferCount);
 	swapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;	// レンダーターゲットとして使用
 	swapchainDesc.Flags = 0;
 	swapchainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -39,11 +40,11 @@ void SwapChain::create(const DeviceContext& context, uint32_t w, uint32_t h, HWN
 
 	util::ThrowIfFailed(factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER));	// ALT + ENTER 操作をしない
 
-	mRtvDescriptorAllocator.create(device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, DeviceContext::MaxFrameCount, false);
+	mRtvDescriptorAllocator.create(device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, bufferCount, false);
 
 	// レンダーターゲットビューの作成
-	mFrameResources.resize(DeviceContext::MaxFrameCount);
-	for (UINT i = 0; i < DeviceContext::MaxFrameCount; i++) {
+	mFrameResources.resize(bufferCount);
+	for (UINT i = 0; i < bufferCount; i++) {
 		util::ThrowIfFailed(mSwapchain->GetBuffer(i, IID_PPV_ARGS(mFrameResources[i].backBuffer.GetAddressOf())));
 		mFrameResources[i].handle = mRtvDescriptorAllocator.allocate();
 		device->CreateRenderTargetView(mFrameResources[i].backBuffer.Get(), nullptr, mFrameResources[i].handle.cpuHandle);
@@ -78,11 +79,10 @@ void SwapChain::resize(UINT width, UINT height)
 		resource.backBuffer.Reset();
 	}
 
-	util::ThrowIfFailed(mSwapchain->ResizeBuffers(DeviceContext::MaxFrameCount, width, height, DXGI_FORMAT_UNKNOWN, 0));
+	util::ThrowIfFailed(mSwapchain->ResizeBuffers(mBufferCount, width, height, DXGI_FORMAT_UNKNOWN, 0));
 
 	// レンダーターゲットビューの作成
-	mFrameResources.resize(DeviceContext::MaxFrameCount);
-	for (UINT i = 0; i < DeviceContext::MaxFrameCount; i++) {
+	for (UINT i = 0; i < mBufferCount; i++) {
 		util::ThrowIfFailed(mSwapchain->GetBuffer(i, IID_PPV_ARGS(mFrameResources[i].backBuffer.GetAddressOf())));
 		context.getDevice()->CreateRenderTargetView(mFrameResources[i].backBuffer.Get(), nullptr, mFrameResources[i].handle.cpuHandle);
 	}

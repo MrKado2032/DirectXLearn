@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer.h"
 #include "D3D12/Camera.h"
+#include "D3D12/Model.h"
 
 struct GLFWwindow;
 class Application {

@@ -132,6 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\D3D12\PSOManager.cpp" />
+    <ClCompile Include="source\D3D12\RootSignatureManager.cpp" />
     <ClCompile Include="source\Core\Application.cpp" />
     <ClCompile Include="source\Core\Window.cpp" />
     <ClCompile Include="source\Core\WindowManager.cpp" />
@@ -196,7 +198,9 @@
     <ClInclude Include="source\D3D12\Material.h" />
     <ClInclude Include="source\D3D12\Mesh.h" />
     <ClInclude Include="source\D3D12\Model.h" />
+    <ClInclude Include="source\D3D12\PSOManager.h" />
     <ClInclude Include="source\D3D12\ResourceUploader.h" />
+    <ClInclude Include="source\D3D12\RootSignatureManager.h" />
     <ClInclude Include="source\D3D12\ShaderLoader.h" />
     <ClInclude Include="source\D3D12\SwapChain.h" />
     <ClInclude Include="source\D3D12\Texture.h" />

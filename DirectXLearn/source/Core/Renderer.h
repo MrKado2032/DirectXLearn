@@ -1,14 +1,12 @@
 #pragma once
-#include "D3D12/DeviceContext.h"
 #include "D3D12/CommandContext.h"
 #include "D3D12/SwapChain.h"
-#include "D3D12/Model.h"
-#include "D3D12/ShaderLoader.h"
 #include "D3D12/D3D12ImGui.h"
 
-struct Model;
 class Renderer {
 public:
+	static constexpr uint32_t MaxFrameCount = 2;
+
 	Renderer();
 	~Renderer();
 
@@ -32,17 +30,12 @@ private:
 	CommandContext mCmdContext{};
 	SwapChain mSwapChain{};
 
-	FrameData mFrameDatas[DeviceContext::MaxFrameCount]{};
+	FrameData mFrameDatas[MaxFrameCount]{};
 
 	D3D12ImGui mImGui;
 
 	UINT mCurrentWidth = 0, mCurrentHeight = 0;
 
-	ComPtr<ID3D12RootSignature> mRootSignature;
-	ComPtr<ID3D12PipelineState> mPipelineState;
-
 	uint32_t mCurrentFrameIndex = 0;
-
-	ShaderLoader shaderLoader;
 
 };
