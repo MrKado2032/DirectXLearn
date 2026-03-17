@@ -36,6 +36,7 @@ void Application::run()
 	start();
 	while (!window->shouldClose()) {
 		window->updateEvents();
+		updateKey();
 
 		auto& ctx = mRenderer.begin();	// 描画開始
 
@@ -78,8 +79,10 @@ void Application::update(float dt)
 	ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
 	ImGui::End();
 
+	mCamera.update();
+
 	for (auto const& model : mModelList) {
-		//model.transform.update()
+		model.second.transform.update(mCamera.getViewProjectionMatrix());
 	}
 }
 
@@ -99,4 +102,61 @@ void Application::resize(GLFWwindow* window, int width, int height)
 		WindowManager::getMainWindow()->setWindowSize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 		app->mRenderer.resizeSwapchain(static_cast<UINT>(width), static_cast<UINT>(height));
 	}
+}
+
+void Application::updateKey()
+{
+	auto window = WindowManager::getMainWindow()->getWindow();
+	ImGuiIO& io = ImGui::GetIO();
+
+	// --- 1. マウス状態の更新 ---
+	bool isRightPressed = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+
+	if (isRightPressed) {
+		if (!bMouseRightToggle) {
+			bMouseRightToggle = true;
+			bFirstMouse = true; // 次のフレームで移動量をリセット
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+	}
+	else {
+		if (bMouseRightToggle) {
+			bMouseRightToggle = false;
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
+	}
+
+	// --- 2. 視点回転処理 (右クリック中のみ) ---
+	if (bMouseRightToggle) {
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+
+		if (bFirstMouse) {
+			lastX = xpos;
+			lastY = ypos;
+			bFirstMouse = false;
+		}
+
+		float dx = static_cast<float>(xpos - lastX);
+		float dy = static_cast<float>(ypos - lastY);
+		lastX = xpos;
+		lastY = ypos;
+
+		float sensitivity = 0.002f;
+		mCamera.rotate(dy * sensitivity, dx * sensitivity);
+	}
+
+	// --- 3. 移動処理 (ImGui操作中でない場合のみ) ---
+	// 右クリック操作中は、ImGuiのウィンドウ上であっても移動を優先する
+	if (!bMouseRightToggle) {
+		if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
+			return; // ImGuiがマウスを欲しがっているときは以下の移動処理をスキップ
+		}
+	}
+
+	float moveSpeed = 0.1f;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) mCamera.moveForward(moveSpeed);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) mCamera.moveForward(-moveSpeed);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) mCamera.moveRight(moveSpeed);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) mCamera.moveRight(-moveSpeed);
 }

@@ -136,6 +136,7 @@
     <ClCompile Include="source\Core\Window.cpp" />
     <ClCompile Include="source\Core\WindowManager.cpp" />
     <ClCompile Include="source\D3D12\Buffer.cpp" />
+    <ClCompile Include="source\D3D12\Camera.cpp" />
     <ClCompile Include="source\D3D12\CommandContext.cpp" />
     <ClCompile Include="source\D3D12\D3D12ImGui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -186,6 +187,7 @@
     <ClInclude Include="source\Core\Window.h" />
     <ClInclude Include="source\Core\WindowManager.h" />
     <ClInclude Include="source\D3D12\Buffer.h" />
+    <ClInclude Include="source\D3D12\Camera.h" />
     <ClInclude Include="source\D3D12\CommandContext.h" />
     <ClInclude Include="source\D3D12\D3D12ImGui.h" />
     <ClInclude Include="source\D3D12\DescriptorAllocator.h" />

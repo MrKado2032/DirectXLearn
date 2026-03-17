@@ -1,5 +1,6 @@
 #pragma once
 #include "Renderer.h"
+#include "D3D12/Camera.h"
 
 struct GLFWwindow;
 class Application {
@@ -21,8 +22,14 @@ protected:
 private:
 	void render(CommandContext& ctx);
 	static void resize(GLFWwindow* window, int width, int height);
+	void updateKey();
 
 	Renderer mRenderer{};
+	Camera mCamera{ 1280, 720 };
+	double lastX = 0.0;
+	double lastY = 0.0;
+	bool bMouseRightToggle = false;
+	bool bFirstMouse = true;
 
 	std::unordered_map<std::string, Model> mModelList;
 };
